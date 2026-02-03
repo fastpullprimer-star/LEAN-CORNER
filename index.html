@@ -64,12 +64,9 @@
   -->
 
 </div>
-
 <script>
   function go(panel) {
     alert("Abrir painel: " + panel);
-    // depois:
-    // window.location.href = panel + ".html";
   }
 
   const map = {
@@ -84,25 +81,22 @@
     "QHSE": "qhse"
   };
 
-  // Desativa clique global do SVG
-  document.querySelector("svg").style.pointerEvents = "none";
+  const svg = document.querySelector("svg");
+  svg.style.pointerEvents = "none";
 
-  document.querySelectorAll("svg text").forEach(text => {
+  svg.querySelectorAll("text").forEach(text => {
     const label = text.textContent.replace(/\s+/g, " ").trim();
-
     if (!map[label]) return;
 
-    const parent = text.parentElement;
+    let shape = text.previousElementSibling;
 
-    // procura uma forma válida no mesmo grupo
-    const shape =
-      parent.querySelector("rect") ||
-      parent.querySelector("path") ||
-      parent.querySelector("polygon");
+    // pula elementos que não são formas
+    while (shape && !["path", "rect", "polygon"].includes(shape.tagName)) {
+      shape = shape.previousElementSibling;
+    }
 
     if (!shape) return;
 
-    // ativa eventos somente na forma
     shape.style.pointerEvents = "auto";
     shape.style.cursor = "pointer";
 
@@ -114,6 +108,7 @@
 
 </body>
 </html>
+
 
 
 
