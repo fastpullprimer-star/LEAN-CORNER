@@ -67,32 +67,40 @@
 
 <script>
   function go(panel) {
-    console.log("Abrir painel:", panel);
+    alert("Abrir painel: " + panel);
+    // depois:
+    // window.location.href = panel + ".html";
   }
 
   const map = {
+    "Organograma": "organograma",
+    "5s": "5s",
+    "VSM": "vsm",
+    "KAIZEN’s": "kaizens",
+    "KAIZENS": "kaizens",
     "Performance Operacional": "performance",
-    "KPI Global": "kpi",
+    "Global KPI": "kpi",
     "Inventário": "inventario",
-    "QHSE": "qhse",
-    "5S": "5s",
-    "Organograma": "organograma"
+    "QHSE": "qhse"
   };
 
-  // varre todos os textos do SVG
   document.querySelectorAll("svg text").forEach(text => {
     const label = text.textContent.trim();
 
     if (map[label]) {
-      const group = text.closest("g") || text;
+      const target = text.closest("g") || text;
 
-      group.classList.add("clickable");
-      group.addEventListener("click", () => go(map[label]));
+      target.classList.add("clickable");
+
+      target.addEventListener("click", () => {
+        go(map[label]);
+      });
     }
   });
 </script>
 
 </body>
 </html>
+
 
 
