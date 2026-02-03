@@ -84,8 +84,17 @@
   const svg = document.querySelector("svg");
   svg.style.pointerEvents = "none";
 
-  svg.querySelectorAll("text").forEach(text => {
-    const label = text.textContent.replace(/\s+/g, " ").trim();
+  svg.querySelectorAll("text").forEach((text, i, all) => {
+    let label = text.textContent.replace(/\s+/g, " ").trim();
+
+    // 👉 tratamento específico para "Performance Operacional"
+    if (label === "Performance") {
+      const next = all[i + 1];
+      if (next && next.textContent.trim() === "Operacional") {
+        label = "Performance Operacional";
+      }
+    }
+
     if (!map[label]) return;
 
     let shape = text.previousElementSibling;
@@ -106,8 +115,10 @@
   });
 </script>
 
+
 </body>
 </html>
+
 
 
 
