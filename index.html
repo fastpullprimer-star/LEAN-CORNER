@@ -1,136 +1,109 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<title>Lean Corner | Home</title>
+  <meta charset="UTF-8" />
+  <title>Lean Corner – Home</title>
 
-<style>
-* {
-  box-sizing: border-box;
-}
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      height: 100%;
+      background: #000;
+      overflow: hidden;
+      touch-action: manipulation;
+      font-family: Arial, sans-serif;
+    }
 
-body {
-  margin: 0;
-  background: #0b1f3a;
-  font-family: Arial, Helvetica, sans-serif;
-  color: white;
-}
+    /* Container base 1920x1080 */
+    .canvas {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      transform-origin: top left;
+    }
 
-/* LAYOUT */
-.container {
-  display: grid;
-  grid-template-rows: 100px 1fr;
-  height: 100vh;
-}
+    /* Escala automática para TV */
+    .scale {
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
 
-/* TOPO */
-.header {
-  display: flex;
-  align-items: center;
-  padding-left: 40px;
-  font-size: 36px;
-  font-weight: bold;
-}
+    /* Fundo SVG */
+    .background {
+      position: absolute;
+      inset: 0;
+      background: url("home.svg") no-repeat center;
+      background-size: cover;
+    }
 
-/* GRID DO HOME */
-.home-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 30px;
-  padding: 40px;
-}
+    /* Botões invisíveis */
+    .btn {
+      position: absolute;
+      cursor: pointer;
+      border-radius: 30px;
+    }
 
-/* CARDS */
-.card {
-  border-radius: 30px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 24px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: transform 0.2s, box-shadow 0.2s;
-  text-align: center;
-}
-
-.card:hover {
-  transform: scale(1.05);
-  box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-}
-
-/* CORES */
-.red {
-  background: #c40000;
-}
-
-.blue {
-  background: #123d82;
-}
-
-/* RESPONSIVO TV */
-@media (max-width: 1200px) {
-  .home-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-</style>
+    .btn:hover {
+      outline: 4px solid rgba(255,255,255,0.3);
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="container">
+  <div class="scale">
+    <div class="canvas" id="canvas">
+      <div class="background"></div>
 
-  <div class="header">
-    Lean Corner — New Experience
+      <!-- BOTÕES (posições baseadas no SVG) -->
+
+      <div class="btn" style="left:300px; top:200px; width:420px; height:180px"
+           onclick="go('performance')"></div>
+
+      <div class="btn" style="left:760px; top:200px; width:420px; height:180px"
+           onclick="go('kpi')"></div>
+
+      <div class="btn" style="left:1220px; top:200px; width:420px; height:180px"
+           onclick="go('inventario')"></div>
+
+      <div class="btn" style="left:300px; top:440px; width:420px; height:180px"
+           onclick="go('qhse')"></div>
+
+      <div class="btn" style="left:760px; top:440px; width:420px; height:180px"
+           onclick="go('5s')"></div>
+
+      <div class="btn" style="left:1220px; top:440px; width:420px; height:180px"
+           onclick="go('organograma')"></div>
+
+    </div>
   </div>
 
-  <div class="home-grid">
+  <script>
+    function scaleCanvas() {
+      const baseWidth = 1920;
+      const baseHeight = 1080;
+      const scaleX = window.innerWidth / baseWidth;
+      const scaleY = window.innerHeight / baseHeight;
+      const scale = Math.min(scaleX, scaleY);
 
-    <div class="card red" onclick="openPanel('performance')">
-      Performance Operacional
-    </div>
+      document.getElementById("canvas").style.transform =
+        `scale(${scale})`;
+    }
 
-    <div class="card blue" onclick="openPanel('global')">
-      Global KPI
-    </div>
+    window.addEventListener("resize", scaleCanvas);
+    scaleCanvas();
 
-    <div class="card red" onclick="openPanel('inventario')">
-      Inventário
-    </div>
-
-    <div class="card blue" onclick="openPanel('organograma')">
-      Organograma
-    </div>
-
-    <div class="card red" onclick="openPanel('qhse')">
-      QHSE
-    </div>
-
-    <div class="card blue" onclick="openPanel('5s')">
-      5S
-    </div>
-
-    <div class="card red" onclick="openPanel('kaizen')">
-      Kaizen
-    </div>
-
-    <div class="card blue" onclick="openPanel('vsm')">
-      VSM
-    </div>
-
-    <div class="card red" onclick="openPanel('sca')">
-      SCA
-    </div>
-
-  </div>
-</div>
-
-<script>
-function openPanel(panel) {
-  alert("Painel selecionado: " + panel + 
-  "\n\n(Próximo passo: criar essa tela)");
-}
-</script>
+    function go(panel) {
+      alert("Abrir painel: " + panel);
+      // depois:
+      // window.location.href = panel + ".html";
+    }
+  </script>
 
 </body>
 </html>
