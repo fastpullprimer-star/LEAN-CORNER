@@ -67,12 +67,32 @@
 
 <script>
   function go(panel) {
-    alert("Abrir painel: " + panel);
-    // depois:
-    // window.location.href = panel + ".html";
+    console.log("Abrir painel:", panel);
   }
+
+  const map = {
+    "Performance Operacional": "performance",
+    "KPI Global": "kpi",
+    "Inventário": "inventario",
+    "QHSE": "qhse",
+    "5S": "5s",
+    "Organograma": "organograma"
+  };
+
+  // varre todos os textos do SVG
+  document.querySelectorAll("svg text").forEach(text => {
+    const label = text.textContent.trim();
+
+    if (map[label]) {
+      const group = text.closest("g") || text;
+
+      group.classList.add("clickable");
+      group.addEventListener("click", () => go(map[label]));
+    }
+  });
 </script>
 
 </body>
 </html>
+
 
