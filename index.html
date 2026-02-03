@@ -1,231 +1,151 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>Lean Corner | Painel TV</title>
+  <meta charset="UTF-8">
+  <title>Lean Corner Dashboard</title>
 
-<style>
-body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background: #0b1c3d;
-    color: #fff;
-}
+  <style>
+    /* RESET */
+    * {
+      box-sizing: border-box;
+    }
 
-/* ===== TELAS ===== */
-.tela {
-    display: none;
-    width: 100vw;
-    height: 100vh;
-}
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #0b1f3a;
+      color: white;
+    }
 
-.tela.ativa {
-    display: block;
-}
+    /* LAYOUT PRINCIPAL */
+    .dashboard {
+      display: grid;
+      grid-template-columns: 280px 1fr;
+      height: 100vh;
+    }
 
-/* ===== TELA PRINCIPAL ===== */
-#home {
-    background: url("763812c1-deb1-4069-b54b-289ac4bed93c.png") no-repeat center;
-    background-size: cover;
-}
+    /* MENU LATERAL */
+    .menu {
+      background: #08172c;
+      padding: 20px;
+      display: grid;
+      gap: 16px;
+    }
 
-/* ===== BOTÕES ===== */
-.botao {
-    position: absolute;
-    width: 220px;
-    height: 220px;
-    border-radius: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    font-size: 26px;
-    font-weight: bold;
-    cursor: pointer;
-    user-select: none;
-}
+    .menu button {
+      background: #c40000;
+      border: none;
+      border-radius: 20px;
+      padding: 18px;
+      font-size: 16px;
+      font-weight: bold;
+      color: white;
+      cursor: pointer;
+      transition: transform 0.2s, background 0.2s;
+    }
 
-.vermelho { background: #c00000; }
-.azul { background: #123c88; }
+    .menu button:hover {
+      background: #a00000;
+      transform: scale(1.03);
+    }
 
-.botao:active {
-    transform: scale(0.94);
-}
+    /* ÁREA DOS PAINÉIS */
+    .panels {
+      padding: 30px;
+      overflow-y: auto;
+    }
 
-/* POSIÇÕES (AJUSTE SE QUISER) */
-#btn-vsm { top: 18%; left: 55%; }
-#btn-kaizen { top: 18%; left: 72%; }
-#btn-5s { top: 35%; left: 55%; }
-#btn-performance { top: 35%; left: 72%; }
-#btn-organograma { top: 52%; left: 45%; }
-#btn-kpi { top: 52%; left: 62%; }
-#btn-inventario { top: 52%; left: 79%; }
-#btn-qhse { top: 69%; left: 72%; }
+    .panel {
+      display: none;
+      background: #123d82;
+      border-radius: 25px;
+      padding: 30px;
+      min-height: 85vh;
+      animation: fade 0.3s ease-in-out;
+    }
 
-/* ===== PAINÉIS INTERNOS ===== */
-.painel {
-    padding: 60px;
-}
+    .panel h1 {
+      margin-top: 0;
+      font-size: 32px;
+    }
 
-.titulo {
-    font-size: 48px;
-    margin-bottom: 20px;
-}
+    @keyframes fade {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
 
-.conteudo {
-    font-size: 24px;
-    opacity: 0.9;
-}
-
-/* BOTÃO VOLTAR */
-.voltar {
-    position: absolute;
-    bottom: 40px;
-    left: 40px;
-    padding: 20px 40px;
-    font-size: 24px;
-    background: #c00000;
-    border-radius: 12px;
-    cursor: pointer;
-}
-</style>
+    /* PAINEL PADRÃO */
+    #home {
+      display: block;
+      background: linear-gradient(135deg, #123d82, #0b2b5c);
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- ================= HOME ================= -->
-<div id="home" class="tela ativa">
+  <div class="dashboard">
 
-    <div class="botao vermelho" id="btn-vsm" onclick="abrir('vsm')">VSM</div>
-    <div class="botao vermelho" id="btn-kaizen" onclick="abrir('kaizen')">Kaizen</div>
-
-    <div class="botao azul" id="btn-5s" onclick="abrir('cincoS')">5S</div>
-    <div class="botao azul" id="btn-performance" onclick="abrir('performance')">
-        Performance<br>Operacional
+    <!-- MENU -->
+    <div class="menu">
+      <button onclick="openPanel('organograma')">Organograma</button>
+      <button onclick="openPanel('global')">Global KPI</button>
+      <button onclick="openPanel('performance')">Performance</button>
+      <button onclick="openPanel('inventario')">Inventário</button>
+      <button onclick="openPanel('qhse')">QHSE</button>
     </div>
 
-    <div class="botao vermelho" id="btn-organograma" onclick="abrir('organograma')">
-        Organograma
+    <!-- PAINÉIS -->
+    <div class="panels">
+
+      <div id="home" class="panel">
+        <h1>Lean Corner</h1>
+        <p>Selecione um módulo no menu ao lado.</p>
+      </div>
+
+      <div id="organograma" class="panel">
+        <h1>Organograma</h1>
+        <p>👉 Aqui você poderá adicionar imagens, cargos e estrutura organizacional.</p>
+      </div>
+
+      <div id="global" class="panel">
+        <h1>Global KPI</h1>
+        <p>👉 Espaço reservado para KPIs globais, gráficos e indicadores.</p>
+      </div>
+
+      <div id="performance" class="panel">
+        <h1>Performance Operacional</h1>
+        <p>👉 Indicadores de produtividade, eficiência e resultados.</p>
+      </div>
+
+      <div id="inventario" class="panel">
+        <h1>Inventário</h1>
+        <p>👉 Controle de estoque, acuracidade e giro.</p>
+      </div>
+
+      <div id="qhse" class="panel">
+        <h1>QHSE</h1>
+        <p>👉 Segurança, Qualidade, Saúde e Meio Ambiente.</p>
+      </div>
+
     </div>
+  </div>
 
-    <div class="botao vermelho" id="btn-kpi" onclick="abrir('kpi')">
-        Global KPI
-    </div>
+  <!-- JAVASCRIPT -->
+  <script>
+    function openPanel(id) {
+      const panels = document.querySelectorAll('.panel');
+      panels.forEach(panel => panel.style.display = 'none');
 
-    <div class="botao vermelho" id="btn-inventario" onclick="abrir('inventario')">
-        Inventário
-    </div>
-
-    <div class="botao azul" id="btn-qhse" onclick="abrir('qhse')">
-        QHSE
-    </div>
-</div>
-
-<!-- ================= PAINEL VSM ================= -->
-<div id="vsm" class="tela painel">
-    <div class="titulo">VSM</div>
-    <div class="conteudo">
-        <!-- ADICIONE AQUI -->
-        Mapa do Fluxo de Valor<br>
-        Lead Time • Gargalos • Oportunidades
-    </div>
-    <div class="voltar" onclick="voltar()">Voltar</div>
-</div>
-
-<!-- ================= PAINEL KAIZEN ================= -->
-<div id="kaizen" class="tela painel">
-    <div class="titulo">Kaizen</div>
-    <div class="conteudo">
-        <!-- ADICIONE AQUI -->
-        Kaizens em andamento<br>
-        Kaizens concluídos<br>
-        Resultados
-    </div>
-    <div class="voltar" onclick="voltar()">Voltar</div>
-</div>
-
-<!-- ================= PAINEL 5S ================= -->
-<div id="cincoS" class="tela painel">
-    <div class="titulo">5S</div>
-    <div class="conteudo">
-        <!-- ADICIONE AQUI -->
-        Auditorias<br>
-        Pontuação<br>
-        Áreas críticas
-    </div>
-    <div class="voltar" onclick="voltar()">Voltar</div>
-</div>
-
-<!-- ================= PERFORMANCE ================= -->
-<div id="performance" class="tela painel">
-    <div class="titulo">Performance Operacional</div>
-    <div class="conteudo">
-        <!-- ADICIONE AQUI -->
-        Produtividade<br>
-        SLA<br>
-        Volume processado
-    </div>
-    <div class="voltar" onclick="voltar()">Voltar</div>
-</div>
-
-<!-- ================= ORGANOGRAMA ================= -->
-<div id="organograma" class="tela painel">
-    <div class="titulo">Organograma</div>
-    <div class="conteudo">
-        <!-- ADICIONE AQUI -->
-        Estrutura organizacional<br>
-        Responsáveis
-    </div>
-    <div class="voltar" onclick="voltar()">Voltar</div>
-</div>
-
-<!-- ================= KPI ================= -->
-<div id="kpi" class="tela painel">
-    <div class="titulo">Global KPI</div>
-    <div class="conteudo">
-        <!-- ADICIONE AQUI -->
-        Indicadores estratégicos<br>
-        Metas x Realizado
-    </div>
-    <div class="voltar" onclick="voltar()">Voltar</div>
-</div>
-
-<!-- ================= INVENTÁRIO ================= -->
-<div id="inventario" class="tela painel">
-    <div class="titulo">Inventário</div>
-    <div class="conteudo">
-        <!-- ADICIONE AQUI -->
-        Acuracidade<br>
-        Divergências<br>
-        Giro
-    </div>
-    <div class="voltar" onclick="voltar()">Voltar</div>
-</div>
-
-<!-- ================= QHSE ================= -->
-<div id="qhse" class="tela painel">
-    <div class="titulo">QHSE</div>
-    <div class="conteudo">
-        <!-- ADICIONE AQUI -->
-        Segurança<br>
-        Qualidade<br>
-        Meio Ambiente
-    </div>
-    <div class="voltar" onclick="voltar()">Voltar</div>
-</div>
-
-<script>
-function abrir(id) {
-    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-    document.getElementById(id).classList.add('ativa');
-}
-
-function voltar() {
-    document.querySelectorAll('.tela').forEach(t => t.classList.remove('ativa'));
-    document.getElementById('home').classList.add('ativa');
-}
-</script>
+      document.getElementById(id).style.display = 'block';
+    }
+  </script>
 
 </body>
 </html>
