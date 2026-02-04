@@ -190,63 +190,140 @@
 
 <!-- MODAL -->
 <div id="modal">
-  <div id="modalContent">
-    <iframe id="sheetFrame"></iframe>
-  </div>
-</div>
+<div id="modalContent"></div>
+ </div>
 
 <!-- BOTÃO VOLTAR -->
 <button id="backBtn" onclick="closeModal()">← VOLTAR</button>
 
 <script>
-  const SHEET_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vRipn_Gs9seVk9z9YaJxSuLwFAX0eOcmhTmXk85LZNodPRQruxACDo_hFd5fJ_Ol0SwWfJULQNzSy9Z/pubhtml";
+  const REALTIME_URL = "https://script.google.com/macros/s/AKfycbwaGlEN3q-ZqkXjFkQ8uDBNthirR_NObvsK-2xZaMVB6zqGITNUNI-QBSAC-Qdm0jcp/exec";
+
+const BUTTONS = {
+  organograma: {
+    type: "image",
+  title: "Organograma",
+  src: "https://lh3.googleusercontent.com/d/1PJ6px3cT2gcdVZDHfqjOdR3TyiXJnuk1"
+  },
+
+
+  performance: {
+    type: "api",
+    title: "Performance Operacional",
+    panel: "performance"
+  },
+
+  kpi: {
+    type: "api",
+    title: "Global KPI",
+    panel: "kpi"
+  },
+
+  inventario: {
+    type: "api",
+    title: "Inventário",
+    panel: "inventario"
+  },
+
+  qhse: {
+    type: "image",
+    title: "QHSE",
+    src: "img/qhse.png"
+  },
+
+  sca: {
+    type: "image",
+    title: "SCA",
+    src: "img/sca-exemplo.jpg"
+  }
+};
+
 
   let lastShape = null;
 
-  function go(panel, evt) {
-    const layer = document.getElementById("transitionLayer");
-    const frame = document.getElementById("sheetFrame");
-    const viewport = document.getElementById("viewport");
+  let realtimeTimer = null;
 
-    // pega o polígono clicado
-    const poly = evt.target;
-    const bbox = poly.getBoundingClientRect();
-    const points = poly.getAttribute("points");
+async function go(key, evt) {
+  const cfg = BUTTONS[key];
+  if (!cfg) return;
+  if (realtimeTimer) {
+  clearInterval(realtimeTimer);
+  realtimeTimer = null;
+}
 
-  // brilho no próprio polígono clicado
-poly.classList.add("glow-only");
+  const viewport = document.getElementById("viewport");
+  const modal = document.getElementById("modal");
+  const content = document.getElementById("modalContent");
+  const poly = evt.target;
 
-// remover o brilho depois da animação (0.6s)
-setTimeout(() => {
-  poly.classList.remove("glow-only");
-}, 600);
+  // brilho
+  poly.classList.add("glow-only");
+  setTimeout(() => poly.classList.remove("glow-only"), 600);
 
-// aplicar blur após 1000ms (1 segundo)
-setTimeout(() => {
-  viewport.style.filter = "blur(8px)";
-}, 400);
+  // blur
+  setTimeout(() => {
+    viewport.style.filter = "blur(8px)";
+  }, 400);
 
-// abrir modal depois do brilho
-setTimeout(() => {
-  const frame = document.getElementById("sheetFrame");
-  frame.src = SHEET_URL;
-  document.getElementById("modal").classList.add("active");
-}, 1000);
+  setTimeout(async () => {
+    modal.classList.add("active");
+
+    // ===== API (Sheets) =====
+    if (cfg.type === "api") {
+      async function atualizar() {
+        const url = `${REALTIME_URL}?panel=${cfg.panel}`;
+        const res = await fetch(url, { cache: "no-store" });
+        const data = await res.json();
+
+        content.innerHTML = `
+          <div style="color:white;padding:40px;height:100%;overflow:auto">
+            <h2>${cfg.title}</h2>
+            <pre>${JSON.stringify(data, null, 2)}</pre>
+          </div>
+        `;
+      }
+
+      await atualizar();
+      realtimeTimer = setInterval(atualizar, 3000);
+    }
+
+    // ===== IMAGEM =====
+    if (cfg.type === "image") {
+      content.innerHTML = `
+        <div style="
+          display:flex;
+          justify-content:center;
+          align-items:center;
+          height:100%;
+          background:black;
+        ">
+          <img 
+            src="${cfg.src}" 
+            style="
+              max-width:100%;
+              max-height:100%;
+              object-fit:contain;
+            "
+          />
+        </div>
+      `;
+    }
+
+  }, 800);
+}
 
 
-
-       // ativa modal depois da expansão
-    setTimeout(() => {
-      frame.src = SHEET_URL;
-      document.getElementById("modal").classList.add("active");
-    }, 800);
-  }
 
 
 
   function closeModal() {
+
+if (realtimeTimer) {
+  clearInterval(realtimeTimer);
+  realtimeTimer = null;
+}
+
     const modal = document.getElementById("modal");
-    const frame = document.getElementById("sheetFrame");
     const viewport = document.getElementById("viewport");
 
     modal.classList.remove("active");
@@ -259,8 +336,6 @@ setTimeout(() => {
         lastShape = null;
       }, 700);
     }
-
-    setTimeout(() => frame.src = "", 300);
   }
 
 
