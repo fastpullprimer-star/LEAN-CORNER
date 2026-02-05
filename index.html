@@ -262,8 +262,12 @@ kaizens: {
   let lastShape = null;
 
   let realtimeTimer = null;
+  let modalSession = 0;
 
 async function go(key, evt) {
+  // 🔑 nova sessão (invalida tudo que estava antes)
+  modalSession++;
+  const sessionId = modalSession;
   const cfg = BUTTONS[key];
   if (!cfg) return;
   if (realtimeTimer) {
@@ -290,18 +294,25 @@ async function go(key, evt) {
 
     // ===== API (Sheets) =====
     if (cfg.type === "api") {
-      async function atualizar() {
-        const url = `${REALTIME_URL}?panel=${cfg.panel}`;
-        const res = await fetch(url, { cache: "no-store" });
-        const data = await res.json();
+     async function atualizar() {
+  // 🚫 sessão antiga? sai fora
+  if (sessionId !== modalSession) return;
 
-        content.innerHTML = `
-          <div style="color:white;padding:40px;height:100%;overflow:auto">
-            <h2>${cfg.title}</h2>
-            <pre>${JSON.stringify(data, null, 2)}</pre>
-          </div>
-        `;
-      }
+  const url = `${REALTIME_URL}?panel=${cfg.panel}`;
+  const res = await fetch(url, { cache: "no-store" });
+  const data = await res.json();
+
+  // 🚫 se o modal já mudou enquanto aguardava o fetch
+  if (sessionId !== modalSession) return;
+
+  content.innerHTML = `
+    <div style="color:white;padding:40px;height:100%;overflow:auto">
+      <h2>${cfg.title}</h2>
+      <pre>${JSON.stringify(data, null, 2)}</pre>
+    </div>
+  `;
+}
+
 
       await atualizar();
       realtimeTimer = setInterval(atualizar, 3000);
@@ -338,25 +349,33 @@ async function go(key, evt) {
 
   function closeModal() {
 
-if (realtimeTimer) {
-  clearInterval(realtimeTimer);
-  realtimeTimer = null;
+  // 🔑 invalida qualquer fetch ainda em andamento
+  modalSession++;
+
+  if (realtimeTimer) {
+    clearInterval(realtimeTimer);
+    realtimeTimer = null;
+  }
+
+  const modal = document.getElementById("modal");
+  const viewport = document.getElementById("viewport");
+  const content = document.getElementById("modalContent");
+
+  // 🧼 limpa o conteúdo do modal
+  content.innerHTML = "";
+
+  modal.classList.remove("active");
+  viewport.style.filter = "blur(0)";
+
+  if (lastShape) {
+    lastShape.classList.add("reverse");
+    setTimeout(() => {
+      lastShape.remove();
+      lastShape = null;
+    }, 700);
+  }
 }
 
-    const modal = document.getElementById("modal");
-    const viewport = document.getElementById("viewport");
-
-    modal.classList.remove("active");
-    viewport.style.filter = "blur(0)";
-
-    if (lastShape) {
-      lastShape.classList.add("reverse");
-      setTimeout(() => {
-        lastShape.remove();
-        lastShape = null;
-      }, 700);
-    }
-  }
 
 
   // Habilitar SVG dinâmico existente
