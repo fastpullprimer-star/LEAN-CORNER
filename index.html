@@ -197,6 +197,82 @@
 <button id="backBtn" onclick="closeModal()">← VOLTAR</button>
 
 <script>
+
+const modalContent = document.getElementById("modalContent");
+
+const DRIVE_WEBAPP =
+  "https://script.google.com/macros/s/AKfycbwEriBnFpIoDIj2hfGQtL8ISEZywkWzdhDm78VVchT8SSHudVgrI-UiGpspVaH7gFhV/exec";
+
+const DRIVE_FOLDER = "1b9UnI2Nh6WOP7Mk0YJmlLXJSy1FTu2P6";
+
+let driveImages = [];
+let driveIndex = 0;
+
+async function loadDriveImages() {
+  const res = await fetch(
+    `${DRIVE_WEBAPP}?folder=${DRIVE_FOLDER}`,
+    { cache: "no-store" }
+  );
+  driveImages = await res.json();
+}
+
+function renderDriveImage() {
+  const img = driveImages[driveIndex];
+
+  modalContent.innerHTML = `
+    <div style="
+      position:relative;
+      width:100%;
+      height:100%;
+      background:black;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+    ">
+
+      <button onclick="prevDrive()" style="${driveBtn('left')}">‹</button>
+
+      <img
+        src="${img.url}"
+        style="max-width:100%;max-height:100%;object-fit:contain;"
+      />
+
+      <button onclick="nextDrive()" style="${driveBtn('right')}">›</button>
+    </div>
+  `;
+}
+
+function nextDrive() {
+  if (driveIndex < driveImages.length - 1) {
+    driveIndex++;
+    renderDriveImage();
+  }
+}
+
+function prevDrive() {
+  if (driveIndex > 0) {
+    driveIndex--;
+    renderDriveImage();
+  }
+}
+
+function driveBtn(side) {
+  return `
+    position:absolute;
+    ${side}:20px;
+    top:50%;
+    transform:translateY(-50%);
+    background:rgba(0,0,0,0.6);
+    color:white;
+    border:none;
+    border-radius:8px;
+    font-size:48px;
+    padding:8px 18px;
+    cursor:pointer;
+    z-index:10;
+  `;
+}
+
   const REALTIME_URL = "https://script.google.com/macros/s/AKfycbwaGlEN3q-ZqkXjFkQ8uDBNthirR_NObvsK-2xZaMVB6zqGITNUNI-QBSAC-Qdm0jcp/exec";
 
 const BUTTONS = {
@@ -221,10 +297,9 @@ kaizens: {
 
 
   organograma: {
-    type: "image",
-  title: "Organograma",
-  src: "https://lh3.googleusercontent.com/d/1KgF4hiqn6WI1aaSTdUL1JAN6rTXtJHUW"
-  },
+  type: "drive",
+  title: "Organograma"
+},
 
 
   performance: {
@@ -289,8 +364,8 @@ async function go(key, evt) {
     viewport.style.filter = "blur(8px)";
   }, 400);
 
-  setTimeout(async () => {
-    modal.classList.add("active");
+modal.classList.add("active");
+
 
     // ===== API (Sheets) =====
     if (cfg.type === "api") {
@@ -339,8 +414,24 @@ async function go(key, evt) {
         </div>
       `;
     }
+// ===== DRIVE (Google Drive) =====
+if (cfg.type === "drive") {
 
-  }, 800);
+  await loadDriveImages();
+
+  if (!driveImages.length) {
+    content.innerHTML = `
+      <div style="color:white;text-align:center;padding:40px">
+        Nenhuma imagem encontrada no Drive
+      </div>
+    `;
+    return;
+  }
+
+  driveIndex = 0;
+  renderDriveImage();
+}
+
 }
 
 
@@ -442,4 +533,3 @@ if (!shape) return;
 
 </body>
 </html>
-
